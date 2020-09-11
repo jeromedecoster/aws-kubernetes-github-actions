@@ -1,0 +1,7 @@
+.ignore
+node_modules
+package-lock.json
+.env
+kubeconfig.yaml
+KUBECONFIG
+aws-auth-configmap.yaml

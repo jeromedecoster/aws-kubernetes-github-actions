@@ -1,0 +1,15 @@
+body {
+    text-align: center;
+    font-family: 'Courier New', Courier, monospace;
+}
+
+img {
+    max-height: 700px;
+}
+
+footer {
+    text-align: center;
+    margin: 2em;
+    font-size: .9em;
+    color: #666;
+}
