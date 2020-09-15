@@ -4,7 +4,7 @@ help:
 	{ grep --extended-regexp '^[a-zA-Z_-]+:.*#[[:space:]].*$$' $(MAKEFILE_LIST) || true; } \
 	| awk 'BEGIN { FS = ":.*#[[:space:]]*" } { printf "\033[1;32m%-22s\033[0m%s\n", $$1, $$2 }'
 
-setup: # install eksctl + kubectl, create aws user + ecr repository
+setup: # install eksctl + kubectl + yq, create aws user + ecr repository
 	./make.sh setup
 
 dev: # local development (by calling npm script directly)
@@ -26,7 +26,7 @@ cluster-create: # create the EKS cluster
 	./make.sh cluster-create
 
 cluster-create-config: # create kubectl EKS configuration
-	./make.sh cluster-kubectl-config
+	./make.sh cluster-create-config
 
 cluster-apply-config: # apply kubectl EKS configuration
 	./make.sh cluster-apply-config

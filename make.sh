@@ -270,6 +270,7 @@ cluster-create-config() {
         - system:masters"
 }
 
+# apply kubectl EKS configuration
 cluster-apply-config() {
     # check if data.mapUsers is configured (return something if data.mapUsers is configured, otherwise return nothing)
     local exists=$(yq read aws-auth-configmap.yaml data.mapUsers)
