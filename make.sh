@@ -89,6 +89,11 @@ install-kubectl() {
     fi
 }
 
+tf-init() {
+    log terraform init
+    cd "$dir/infra"
+    terraform init
+}
 
 create-env() {
     # log install site npm modules
@@ -165,6 +170,7 @@ setup() {
     install-eksctl
     install-kubectl
     install-yq
+    tf-init
     create-env
 }
 
@@ -211,6 +217,13 @@ rm() {
         --force $PROJECT_NAME
 }
 
+# terraform vallidate
+validate() {
+    cd "$dir/infra"
+    terraform fmt -recursive
+    terraform validate
+}
+
 # create the EKS cluster
 cluster-create() {
     # check if cluster already exists (return something if the cluster exists, otherwise return nothing)
@@ -225,13 +238,20 @@ cluster-create() {
     # create a cluster named $PROJECT_NAME
     log create eks cluster $PROJECT_NAME
 
-    eksctl create cluster \
-        --name $PROJECT_NAME \
-        --region $AWS_REGION \
-        --managed \
-        --node-type t2.small \
-        --nodes 1 \
-        --profile $AWS_PROFILE
+    # terraform plan + terraform apply
+    cd "$dir/infra"
+    terraform plan
+    terraform apply -auto-approve
+
+    log setup kubectl config
+    # setup kubectl config
+    aws eks update-kubeconfig \
+        --name $(terraform output -raw cluster_name) \
+        --region $(terraform output -raw region)
+
+    log kubectl config current-context
+    # must be like : arn:aws:eks:eu-west-3:xxxx:cluster/kubernetes-github-actions
+    kubectl config current-context
 }
 
 # create kubectl EKS configuration
@@ -243,7 +263,7 @@ cluster-create-config() {
 
     log inject certificate
     # yq tips: https://mikefarah.gitbook.io/yq/usage/path-expressions#with-prefixes
-    CERTIFICATE=$(yq read $HOME/.kube/config "clusters.(name==$PROJECT_NAME*).cluster.certificate-authority-data")
+    CERTIFICATE=$(yq read $HOME/.kube/config "clusters.(name==$CONTEXT).cluster.certificate-authority-data")
     log certificate $CERTIFICATE
     yq write --inplace kubeconfig.yaml 'clusters[0].cluster.certificate-authority-data' $CERTIFICATE
 
@@ -295,10 +315,13 @@ cluster-elb() {
 
 # delete the EKS cluster
 cluster-delete() {
-    eksctl delete cluster \
-        --name $PROJECT_NAME \
-        --region $AWS_REGION \
-        --profile $AWS_PROFILE
+    # delete eks content
+    log delete namespace kubernetes-github-actions
+    kubectl delete ns kubernetes-github-actions --ignore-not-found --wait
+
+    # terraform destroy
+    cd "$dir/infra"
+    terraform destroy -auto-approve
 }
 
 

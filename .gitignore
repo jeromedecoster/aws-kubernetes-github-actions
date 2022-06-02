@@ -5,3 +5,11 @@ package-lock.json
 kubeconfig.yaml
 KUBECONFIG
 aws-auth-configmap.yaml
+.terraform
+.terraform.lock.hcl
+terraform.plan
+terraform.tfvars
+tfplan
+*.tfstate
+*.tfstate.backup
+*.tfstate

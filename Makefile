@@ -22,6 +22,9 @@ run: # run the built production image on localhost
 rm: # remove the running container
 	./make.sh rm
 
+validate: # terraform vallidate
+	./make.sh validate
+
 cluster-create: # create the EKS cluster
 	./make.sh cluster-create
 
