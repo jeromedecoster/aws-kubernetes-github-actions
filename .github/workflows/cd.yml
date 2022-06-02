@@ -63,6 +63,8 @@ jobs:
     - name: Install and configure kubectl
       run: |
         VERSION=$(curl --silent https://storage.googleapis.com/kubernetes-release/release/stable.txt)
+        # https://github.com/aws/aws-cli/issues/6920#issuecomment-1117981158
+        VERSION=v1.23.6
         curl https://storage.googleapis.com/kubernetes-release/release/$VERSION/bin/linux/amd64/kubectl \
           --progress-bar \
           --location \
