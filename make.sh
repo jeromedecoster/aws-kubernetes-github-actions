@@ -57,11 +57,7 @@ install-yq() {
         log install yq
         warn warn sudo is required
         cd /usr/local/bin
-        local URL=$(wget -q -O - https://api.github.com/repos/mikefarah/yq/releases \
-            | jq --raw-output 'map( select(.prerelease==false) | .assets[].browser_download_url ) | .[]' \
-            | grep linux_amd64 \
-            | head -n 1)
-        sudo curl "$URL" \
+        sudo curl "https://github.com/mikefarah/yq/releases/download/3.4.1/yq_linux_amd64" \
             --progress-bar \
             --location \
             --output yq
